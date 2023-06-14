@@ -14,7 +14,7 @@ class DoneTaskScreen extends StatelessWidget {
       builder: (context, state) {
         if (state is AppStatesLoaded) {
           return state.task.isNotEmpty
-              ? taskBuilder(tasks: state.task, bottomColor: Colors.grey)
+              ? taskBuilder(tasks: state.task, bottomColor: Colors.green)
               : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
