@@ -15,22 +15,16 @@ class AppCubit extends Cubit<AppStates> {
       'todo.db',
       version: 1,
       onCreate: (database, version) {
-        print('database created');
         database
             .execute(
                 'CREATE TABLE task (id INTEGER PRIMARY KEY , title TEXT , description TEXT , time TEXT , date TEXT, status TEXT)')
-            .then((value) {
-          print('table created');
-        }).catchError((error) {
-          print('error when creating table ${error.toString()}');
-        });
+            .then((value) {})
+            .catchError((error) {});
       },
       onOpen: (database) {
         getDatabaseFromDatabase(database);
         emit(AppStatesLoaded(newTask));
-        emit(AppStatesLoaded(doneTask));
-
-        print('database open');
+        //emit(AppStatesLoaded(doneTask));
       },
     ).then((value) {
       database = value;
@@ -51,12 +45,11 @@ class AppCubit extends Cubit<AppStates> {
           .then((value) {
         TaskModel(value,
             title: title, date: date, description: description, time: time);
-        print('$value inserted successfully');
-
-        getDatabaseFromDatabase(database);
-      }).catchError((error) {
-        print('error when insert new record ${error.toString()}');
-      });
+        newTask.add(TaskModel(value,
+            title: title, date: date, description: description, time: time));
+        emit(AppStatesLoaded(newTask));
+        //getDatabaseFromDatabase(database);
+      }).catchError((error) {});
     });
   }
 
@@ -71,20 +64,16 @@ class AppCubit extends Cubit<AppStates> {
               date: element['date'],
               description: element['description'],
               time: element['time']));
-
-          emit(AppStatesLoaded(newTask));
         } else {
           doneTask.add(TaskModel(element['id'],
               title: element['title'],
               date: element['date'],
               description: element['description'],
               time: element['time']));
-          print(doneTask);
         }
-        print(element['status']);
-        emit(AppStatesLoaded(doneTask));
       });
     });
+    emit(AppStatesLoaded(newTask));
   }
 
   void updateData({
@@ -95,7 +84,10 @@ class AppCubit extends Cubit<AppStates> {
       status,
       id,
     ]).then((value) {
-      getDatabaseFromDatabase(database);
+      doneTask.add(newTask.firstWhere((task) => task.id == id));
+      newTask.removeWhere((task) => task.id == id);
+      emit(AppStatesLoaded(newTask));
+      //getDatabaseFromDatabase(database);
     });
   }
 
@@ -109,6 +101,9 @@ class AppCubit extends Cubit<AppStates> {
       // emit(AppStatesLoaded();
     });
   }
+
+  loadDone() => emit(AppStatesLoaded(doneTask));
+  loadNew() => emit(AppStatesLoaded(newTask));
 
   // bool isBottomSheetShown = false;
   // IconData fabIcon = Icons.edit;

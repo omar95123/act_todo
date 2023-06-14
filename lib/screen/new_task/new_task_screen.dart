@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todoapp2/bloc.dart';
 
 import '../../components.dart';
 import '../../cubit/cubit.dart';
@@ -12,9 +11,8 @@ class NewTaskScreen extends StatelessWidget {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         if (state is AppStatesLoaded) {
-          return AppBloc.taskBloc.newTask.isNotEmpty
-              ? taskBuilder(
-                  tasks: AppBloc.taskBloc.newTask, bottomColor: Colors.grey)
+          return state.task.isNotEmpty
+              ? taskBuilder(tasks: state.task, bottomColor: Colors.grey)
               : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
